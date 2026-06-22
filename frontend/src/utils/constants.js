@@ -1,5 +1,8 @@
 export const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api" || "https://invoiceflowapp.vercel.app/api";
+  import.meta.env.VITE_API_BASE_URL ||
+  (import.meta.env.MODE === 'production'
+    ? 'https://invoice-flow-backend-lake.vercel.app/api'
+    : 'http://localhost:5000/api');
 
 export const INVOICE_STATUS = {
   DRAFT: "Draft",
