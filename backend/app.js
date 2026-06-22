@@ -23,7 +23,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => {
-  res.json({ message: 'SterlingPro Invoice Management API' });
+  res.json({ message: 'Invoice-Flow API' });
 });
 
 app.use('/api/auth', authRoutes);
