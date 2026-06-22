@@ -518,19 +518,15 @@ export const getRecentInvoices = async (req, res) => {
 
 export const exportInvoicePDF = async (req, res) => {
   try {
-    console.log("Starting PDF export for invoice:", req.params.id);
-
     const invoice = await Invoice.findById(req.params.id)
       .populate("clientId")
       .populate("bankId")
       .populate("createdBy", "name email signature");
 
     if (!invoice) {
-      console.log("Invoice not found:", req.params.id);
+    
       return res.status(404).json({ message: "Invoice not found" });
     }
-
-    console.log("Invoice found, converting logo to base64...");
 
     // Convert logo to base64
     let logoBase64;
@@ -538,20 +534,18 @@ export const exportInvoicePDF = async (req, res) => {
       logoBase64 = await getBase64FromUrl(
         "https://res.cloudinary.com/dvd7wbty8/image/upload/v1769988042/Sterling-pro-logo_fuzfap.png",
       );
-      console.log("Logo converted to base64 successfully");
+    
     } catch (error) {
       console.error("Error converting logo:", error);
       // Use a fallback or empty string
       logoBase64 = "";
     }
 
-    console.log("Generating HTML...");
+   
 
     // Generate HTML for the invoice
     const html = generateInvoiceHTML(invoice, logoBase64);
-    console.log("HTML generated, length:", html.length);
-
-    console.log("Launching puppeteer...");
+  
 
     // Use puppeteer to generate PDF
     const browser = await puppeteer.launch({
@@ -559,21 +553,20 @@ export const exportInvoicePDF = async (req, res) => {
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
 
-    console.log("Browser launched, creating new page...");
+ 
 
     const page = await browser.newPage();
 
     // Set viewport for better PDF generation
     await page.setViewport({ width: 1200, height: 1600 });
 
-    console.log("Setting content...");
-
+ 
     await page.setContent(html, {
       waitUntil: "networkidle0",
       timeout: 60000,
     });
 
-    console.log("Content set successfully, generating PDF...");
+   
 
     const pdfBuffer = await page.pdf({
       format: "A4",
@@ -586,12 +579,10 @@ export const exportInvoicePDF = async (req, res) => {
       },
     });
 
-    console.log("PDF generated, closing browser...");
-
+ 
     await browser.close();
 
-    console.log("PDF export successful, sending response...");
-
+ 
     await logAction(
       req.user.id,
       "invoice_exported_pdf",

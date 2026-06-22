@@ -13,11 +13,8 @@ import { validate } from '../middlewares/validate.js';
 
 const router = express.Router();
 
-// DEBUG: Check what createBankValidation is
-console.log('createBankValidation:', createBankValidation);
-console.log('Is it an array?', Array.isArray(createBankValidation));
 
-// Bank management - ONLY ADMIN can modify
+// Bank management
 router.post('/banks', protect, authorize('ADMIN'), ...createBankValidation, validate, createBank);
 router.put('/banks/:id', protect, authorize('ADMIN'), ...updateBankValidation, validate, updateBank);
 router.delete('/banks/:id', protect, authorize('ADMIN'), deleteBank);

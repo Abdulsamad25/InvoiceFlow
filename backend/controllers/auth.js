@@ -393,10 +393,6 @@ export const deleteUser = async (req, res) => {
 
 export const uploadSignature = async (req, res) => {
   try {
-    console.log("Starting signature upload...");
-    console.log("File received:", req.file ? "Yes" : "No");
-    console.log("User ID:", req.user?.id);
-    console.log("User role:", req.user?.role);
 
     // Check if user is an accountant
     if (req.user.role !== "ACCOUNTANT") {
@@ -410,25 +406,7 @@ export const uploadSignature = async (req, res) => {
     }
 
     // Check Cloudinary configuration
-    console.log("Cloudinary config check:");
-    console.log(
-      "CLOUD_NAME:",
-      process.env.CLOUDINARY_CLOUD_NAME ? "Set" : "Missing",
-      "Value:",
-      process.env.CLOUDINARY_CLOUD_NAME,
-    );
-    console.log(
-      "API_KEY:",
-      process.env.CLOUDINARY_API_KEY ? "Set" : "Missing",
-      "Value:",
-      process.env.CLOUDINARY_API_KEY,
-    );
-    console.log(
-      "API_SECRET:",
-      process.env.CLOUDINARY_API_SECRET ? "Set" : "Missing",
-      "Value:",
-      process.env.CLOUDINARY_API_SECRET,
-    );
+   
 
     if (
       !process.env.CLOUDINARY_CLOUD_NAME ||
@@ -440,7 +418,7 @@ export const uploadSignature = async (req, res) => {
     }
 
     // Upload to Cloudinary
-    console.log("Starting Cloudinary upload...");
+  
     const result = await new Promise((resolve, reject) => {
       const uploadStream = cloudinary.v2.uploader.upload_stream(
         {
@@ -466,14 +444,13 @@ export const uploadSignature = async (req, res) => {
     });
 
     // Update user with signature URL
-    console.log("Updating user with signature URL...");
+  
     const user = await User.findByIdAndUpdate(
       req.user.id,
       { signature: result.secure_url },
       { new: true },
     );
 
-    console.log("User updated successfully:", user.signature);
 
     await logAction(
       req.user.id,
